@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content1 %}
+<div class="header">
+    <div style="width:50%;float:left;font-size:2vw;text-align:left;color:black; padding-top:1%;padding-left:5%;">Nutrition Image Analysis</div>
+    <div class="topnav-right" style="padding-top:0.5%;">
+        <a href="{{ url_for('home')}}">Home</a>
+        <a class="active" href="{{ url_for('image1')}}">Classify</a>
+    </div>
+</div>
+<br>
+
+<div class="container">
+    <center>
+        <div class="card" style="background-color: green; padding: 20px; margin-top: 2em;">
+            <h2>Image Prediction Result</h2>
+            <p><strong>Result:</strong> {{ result }}</p>
+            <p><strong>Nutrition Data:</strong>{{ showcase }}</p>
+            <!-- <ul>
+                {% for item in showcase %}
+                <li>
+                    <strong>{{ item['name'] }}:</strong>
+                    <ul>
+                        <li>Calories: {{ item['calories'] }}</li>
+                        <li>Protein: {{ item['protein_g'] }} g</li>
+                        <li>Fat: {{ item['fat_total_g'] }} g</li>
+                        <li>Carbohydrates: {{ item['carbohydrates_total_g'] }} g</li>
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul> -->
+            
+        </div>
+    </center>
+</div>
+{% endblock %}

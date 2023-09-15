@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content1 %}
+<div class="header">
+    <!-- Header content here -->
+</div>
+<br>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="text-center">Image Classification</h2>
+            <form method="POST" action="{{ url_for('launch') }}" enctype="multipart/form-data" class="text-center">
+                <div class="form-group">
+                    <label for="imageUpload" class="btn btn-primary">
+                        Choose Image...
+                        <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg" style="display: none;">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Classify Image</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

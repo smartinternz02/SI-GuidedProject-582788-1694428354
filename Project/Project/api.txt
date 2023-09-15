@@ -1,0 +1,84 @@
+from flask import Flask, render_template, request
+import os
+import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+import requests
+
+app = Flask(__name__, template_folder="templates")
+model = load_model('nutrition.h5')
+print("Loaded model from disk")
+
+# Replace 'YOUR_API_KEY_HERE' with your actual Calorie Ninjas API key
+API_KEY = 'EhapY/itUznqgJOTIr/sWw==QpPe21sVezPJRjbi'
+
+def nutrition(index):
+    import requests
+    url = "https://calorieninjas.p.rapidapi.com/v1/nutrition"
+    querystring = {"query": index}
+    headers = {
+        'X-RapidAPI-Key': API_KEY,
+        'X-RapidAPI-Host': 'calorieninjas.p.rapidapi.com'
+    }
+    response = requests.request(
+        "GET", url, headers=headers, params=querystring)
+    print("Response:")
+    print(response.text)
+    return response.json().get("items", [])  # Handle empty response gracefully
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/image1', methods=['GET', 'POST'])
+def image1():
+    return render_template("image.html")
+
+@app.route('/predict', methods=['GET', 'POST'])
+def launch():
+    if request.method == 'POST':
+        f = request.files['file']
+        basepath = os.path.dirname(__file__)
+        filepath = os.path.join(basepath, "uploads", f.filename)
+        f.save(filepath)
+
+        img = image.load_img(filepath, target_size=(64, 64))
+        x = image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+
+        pred = np.argmax(model.predict(x), axis=1)
+        index = ['APPLE', 'BANANA', 'ORANGE', 'PINEAPPLE', 'WATERMELON']
+        result = index[pred[0]]
+        nutrition_data = nutrition(result)
+
+        return render_template("imageprediction.html", result=result, showcase=nutrition_data)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+import json
+
+# Assuming `nd` is a dictionary containing JSON data
+nd = {
+    "items": [
+        {
+            "name": "apple",
+            "calories": 53.0,
+            "serving_size_g": 100.0,
+            "fat_total_g": 0.2,
+            "fat_saturated_g": 0.0,
+            "protein_g": 0.3,
+            "sodium_mg": 1,
+            "potassium_mg": 11,
+            "cholesterol_mg": 0,
+            "carbohydrates_total_g": 14.1,
+            "fiber_g": 2.4,
+            "sugar_g": 10.3
+        }
+    ]
+}
+
+# Convert the JSON data to a string
+showcase_json = json.dumps(nd)
+
+# Pass the string to the template
+return render_template("imageprediction.html", result=result, showcase=showcase_json)
